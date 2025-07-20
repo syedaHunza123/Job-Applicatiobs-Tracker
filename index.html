@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Job Application Tracker</title>
+
+  <!-- Google Font & Font-Awesome -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+ <!-- Replace the entire <style> block with this -->
+<style>
+:root {
+  /* Colors */
+  --bg:            #f5f7fa;
+  --surface:       #ffffff;
+  --surface-2:     #eef2f7;
+  --text:          #2c3e50;
+  --text-muted:    #7f8c8d;
+  --primary:       #667eea;
+  --primary-dark:  #5a6fd8;
+  --success:       #48bb78;
+  --warning:       #ed8936;
+  --danger:        #e53e3e;
+  --border:        #e2e8f0;
+  --radius:        8px;
+  --shadow:        0 1px 3px rgba(0,0,0,.05), 0 4px 12px rgba(0,0,0,.06);
+  --font:          'Inter', system-ui, sans-serif;
+}
+
+[data-theme="dark"] {
+  --bg:            #111827;
+  --surface:       #1f2937;
+  --surface-2:     #374151;
+  --text:          #f9fafb;
+  --text-muted:    #9ca3af;
+  --border:        #374151;
+  --shadow:        0 1px 2px rgba(0,0,0,.25), 0 4px 12px rgba(0,0,0,.3);
+}
+
+/* Reset / base */
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:var(--font);
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.6;
+  padding:2rem;
+  transition:background .3s,color .3s;
+}
+
+/* Header */
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:2rem;
+}
+h1{font-size:1.75rem;font-weight:700;color:var(--text)}
+
+/* Buttons */
+button{
+  cursor:pointer;
+  border:none;
+  border-radius:var(--radius);
+  padding:.55rem .9rem;
+  font-size:.85rem;
+  font-weight:600;
+  transition:.2s;
+}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--primary-dark)}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-outline{
+  background:transparent;
+  color:var(--text-muted);
+  border:1px solid var(--border);
+}
+.btn-outline:hover{background:var(--surface-2);color:var(--text)}
+
+/* Card-style form */
+form{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:1.5rem;
+  box-shadow:var(--shadow);
+  display:grid;
+  gap:1rem;
+  max-width:600px;
+  margin-bottom:2rem;
+}
+label{font-weight:600;font-size:.8rem;color:var(--text-muted)}
+input,select{
+  padding:.6rem .75rem;
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  background:var(--surface-2);
+  color:var(--text);
+}
+input:focus,select:focus{
+  outline:none;
+  border-color:var(--primary);
+  box-shadow:0 0 0 2px rgba(102,126,234,.2);
+}
+
+/* Controls bar */
+.controls{
+  display:flex;
+  flex-wrap:wrap;
+  gap:.5rem;
+  align-items:center;
+  margin-bottom:1.5rem;
+}
+.controls select{
+  background:var(--surface);
+  box-shadow:var(--shadow);
+  border:none;
+  padding:.5rem .75rem;
+  font-size:.8rem;
+}
+
+/* Table => card grid on mobile */
+table{
+  width:100%;
+  border-collapse:collapse;
+  background:var(--surface);
+  border-radius:var(--radius);
+  overflow:hidden;
+  box-shadow:var(--shadow);
+}
+thead{background:var(--surface-2)}
+th,td{padding:.9rem .75rem;font-size:.85rem}
+th{font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em}
+tbody tr:not(:last-child) td{border-bottom:1px solid var(--border)}
+tbody tr:hover{background:var(--surface-2)}
+
+/* Status badges */
+.badge{
+  padding:.25rem .6rem;
+  border-radius:20px;
+  font-size:.7rem;
+  font-weight:700;
+  color:#fff;
+}
+.applied{background:var(--primary)}
+.interview{background:var(--warning)}
+.offer{background:var(--success)}
+.rejected{background:var(--danger)}
+
+/* Icons */
+.theme-toggle{
+  background:none;
+  border:none;
+  font-size:1.3rem;
+  color:var(--text-muted);
+  transition:.3s;
+}
+.theme-toggle:hover{color:var(--text)}
+
+/* Responsive */
+@media(max-width:650px){
+  body{padding:1rem}
+  table,thead,tbody,th,td,tr{display:block}
+  thead{display:none}
+  tr{
+    margin-bottom:1rem;
+    background:var(--surface);
+    border-radius:var(--radius);
+    padding:.75rem;
+    box-shadow:var(--shadow);
+  }
+  td{
+    display:flex;
+    justify-content:space-between;
+    border:none;
+    padding:.35rem 0;
+  }
+  td::before{
+    content:attr(data-label);
+    font-weight:600;
+    color:var(--text-muted);
+  }
+}
+
+/* Fade-in animation */
+.fade-in{animation:fadeIn .4s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+
+<body>
+  <header>
+    <h1>Job Application Tracker</h1>
+    <button id="themeToggle" class="theme-toggle" title="Toggle dark mode">
+      <i class="fas fa-moon"></i>
+    </button>
+  </header>
+
+  <!-- Add / Edit form -->
+  <form id="jobForm">
+    <h2 id="formTitle">Add New Application</h2>
+    <input type="hidden" id="editId" />
+
+    <label>Company Name *</label>
+    <input type="text" id="company" required placeholder="e.g. Google" />
+
+    <label>Job Title *</label>
+    <input type="text" id="title" required placeholder="e.g. Frontend Developer" />
+
+    <label>Date Applied *</label>
+    <input type="date" id="date" required />
+
+    <label>Status *</label>
+    <select id="status" required>
+      <option value="" disabled selected>Select status</option>
+      <option value="applied">Applied</option>
+      <option value="interview">Interview</option>
+      <option value="offer">Offer</option>
+      <option value="rejected">Rejected</option>
+    </select>
+
+    <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem">
+      <button type="submit" class="btn-primary">Save</button>
+      <button type="button" class="btn-danger" id="cancelEdit" style="display: none">Cancel</button>
+    </div>
+  </form>
+
+  <!-- Controls -->
+  <div class="controls">
+    <label for="filter">Filter:</label>
+    <select id="filter">
+      <option value="all">All</option>
+      <option value="applied">Applied</option>
+      <option value="interview">Interview</option>
+      <option value="offer">Offer</option>
+      <option value="rejected">Rejected</option>
+    </select>
+
+    <label for="sort">Sort:</label>
+    <select id="sort">
+      <option value="newest">Newest First</option>
+      <option value="oldest">Oldest First</option>
+    </select>
+
+    <button id="exportCsv" class="btn-primary">Export CSV</button>
+    <button id="clearAll" class="btn-danger">Clear All</button>
+  </div>
+
+  <!-- Table -->
+  <table id="jobTable">
+    <thead>
+      <tr>
+        <th>Company</th>
+        <th>Title</th>
+        <th>Date</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="jobList"></tbody>
+  </table>
+
+  <script>
+    // ====== State ======
+    const state = {
+      jobs: JSON.parse(localStorage.getItem('jobs')) || [],
+      filter: 'all',
+      sort: 'newest',
+      editId: null
+    };
+
+    // ====== DOM ======
+    const $ = sel => document.querySelector(sel);
+    const $$ = sel => [...document.querySelectorAll(sel)];
+
+    const jobForm = $('#jobForm');
+    const formTitle = $('#formTitle');
+    const companyInput = $('#company');
+    const titleInput = $('#title');
+    const dateInput = $('#date');
+    const statusInput = $('#status');
+    const editIdInput = $('#editId');
+    const cancelEditBtn = $('#cancelEdit');
+    const filterSelect = $('#filter');
+    const sortSelect = $('#sort');
+    const jobList = $('#jobList');
+    const exportBtn = $('#exportCsv');
+    const clearBtn = $('#clearAll');
+    const themeToggle = $('#themeToggle');
+
+    // ====== Init ======
+    function init() {
+      render();
+      jobForm.addEventListener('submit', handleSubmit);
+      filterSelect.addEventListener('change', e => { state.filter = e.target.value; render(); });
+      sortSelect.addEventListener('change', e => { state.sort = e.target.value; render(); });
+      exportBtn.addEventListener('click', exportCsv);
+      clearBtn.addEventListener('click', clearAll);
+      cancelEditBtn.addEventListener('click', cancelEdit);
+      themeToggle.addEventListener('click', toggleTheme);
+      loadTheme();
+    }
+
+    // ====== CRUD ======
+    function handleSubmit(e) {
+      e.preventDefault();
+      const data = {
+        id: state.editId || Date.now(),
+        company: companyInput.value.trim(),
+        title: titleInput.value.trim(),
+        date: dateInput.value,
+        status: statusInput.value
+      };
+
+      if (state.editId) {
+        const idx = state.jobs.findIndex(j => j.id === state.editId);
+        state.jobs[idx] = data;
+      } else {
+        state.jobs.push(data);
+      }
+      save();
+      resetForm();
+      render();
+    }
+
+    function editJob(id) {
+      const job = state.jobs.find(j => j.id === id);
+      if (!job) return;
+      formTitle.textContent = 'Edit Application';
+      companyInput.value = job.company;
+      titleInput.value = job.title;
+      dateInput.value = job.date;
+      statusInput.value = job.status;
+      editIdInput.value = job.id;
+      state.editId = job.id;
+      cancelEditBtn.style.display = 'inline-block';
+    }
+
+    function deleteJob(id) {
+      if (confirm('Delete this application?')) {
+        state.jobs = state.jobs.filter(j => j.id !== id);
+        save();
+        render();
+      }
+    }
+
+    function cancelEdit() {
+      resetForm();
+    }
+
+    function resetForm() {
+      jobForm.reset();
+      formTitle.textContent = 'Add New Application';
+      editIdInput.value = '';
+      state.editId = null;
+      cancelEditBtn.style.display = 'none';
+    }
+
+    function clearAll() {
+      if (confirm('Remove ALL applications?')) {
+        state.jobs = [];
+        save();
+        render();
+      }
+    }
+
+    // ====== Render ======
+    function render() {
+      let filtered = [...state.jobs];
+      if (state.filter !== 'all') {
+        filtered = filtered.filter(j => j.status === state.filter);
+      }
+      filtered.sort((a, b) => {
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+        return state.sort === 'newest' ? dateB - dateA : dateA - dateB;
+      });
+
+      jobList.innerHTML = '';
+      filtered.forEach(job => {
+        const tr = document.createElement('tr');
+        tr.className = 'fade-in';
+        tr.innerHTML = `
+          <td data-label="Company">${job.company}</td>
+          <td data-label="Title">${job.title}</td>
+          <td data-label="Date">${job.date}</td>
+          <td data-label="Status"><span class="badge ${job.status}">${job.status}</span></td>
+          <td data-label="Actions" class="actions">
+            <button class="btn-primary" onclick="editJob(${job.id})"><i class="fas fa-edit"></i></button>
+            <button class="btn-danger" onclick="deleteJob(${job.id})"><i class="fas fa-trash"></i></button>
+          </td>
+        `;
+        jobList.appendChild(tr);
+      });
+    }
+
+    // ====== Storage ======
+    function save() {
+      localStorage.setItem('jobs', JSON.stringify(state.jobs));
+    }
+
+    // ====== CSV Export ======
+    function exportCsv() {
+      if (!state.jobs.length) return;
+      const header = ['Company', 'Title', 'Date Applied', 'Status'];
+      const rows = state.jobs.map(j => [j.company, j.title, j.date, j.status]);
+      const csv = [header, ...rows]
+        .map(r => r.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+        .join('\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'job-applications.csv';
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    // ====== Theme ======
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'light';
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+      updateThemeIcon(next);
+    }
+
+    function loadTheme() {
+      const saved = localStorage.getItem('theme') || 'light';
+      document.documentElement.setAttribute('data-theme', saved);
+      updateThemeIcon(saved);
+    }
+
+    function updateThemeIcon(theme) {
+      themeToggle.innerHTML = theme === 'dark'
+        ? '<i class="fas fa-sun"></i>'
+        : '<i class="fas fa-moon"></i>';
+    }
+
+    // ====== Kick off ======
+    init();
+  </script>
+</body>
+</html>
